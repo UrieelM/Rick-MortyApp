@@ -4,10 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,20 +29,21 @@ fun CharacterDetailScreen(id: Int, innerPaddingValues: PaddingValues) {
     var isLoading by remember { mutableStateOf(false) }
     var character by remember {
         mutableStateOf(Character(
+            created = "",
+            episode = listOf(),
+            gender = "",
             id = 0,
-            name = "",
-            species = "",
-            status = "",
             image = "",
             location = Location(name = "", url = ""),
-            gender = "",
-            created = "",
-            episode = listOf(""),
+            name = "",
             origin = Origin(name = "", url = ""),
+            species = "",
+            status = "",
             type = "",
-            url = "",
+            url = ""
         ))
     }
+    var showEpisodesDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = true) {
         scope.launch {
@@ -101,7 +99,6 @@ fun CharacterDetailScreen(id: Int, innerPaddingValues: PaddingValues) {
                         contentScale = ContentScale.Crop
                     )
 
-
                     Text(
                         text = character.name,
                         style = TextStyle(
@@ -114,7 +111,6 @@ fun CharacterDetailScreen(id: Int, innerPaddingValues: PaddingValues) {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-
                     Text(
                         text = "Status: ${character.status}",
                         style = TextStyle(fontSize = 16.sp, color = Color(0xFF00C4D7)) // Color cian
@@ -124,23 +120,56 @@ fun CharacterDetailScreen(id: Int, innerPaddingValues: PaddingValues) {
                         style = TextStyle(fontSize = 16.sp, color = Color(0xFF00C4D7)) // Color cian
                     )
                     Text(
-                        text = "Genero: ${character.gender}",
+                        text = "Género: ${character.gender}",
                         style = TextStyle(fontSize = 16.sp, color = Color(0xFF00C4D7)) // Color cian
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-
 
                     Text(
                         text = "Origen: ${character.origin.name}",
                         style = TextStyle(fontSize = 16.sp, color = Color(0xFFDA77B9)) // Color morado
                     )
                     Text(
-                        text = "Localizacion: ${character.location.name}",
+                        text = "Localización: ${character.location.name}",
                         style = TextStyle(fontSize = 16.sp, color = Color(0xFFDA77B9)) // Color morado
                     )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = { showEpisodesDialog = true },
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Text("Mostrar episodios")
+                    }
+
+                    if (showEpisodesDialog) {
+                        EpisodeDialog(episodes = character.episode, onDismiss = { showEpisodesDialog = false })
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+fun EpisodeDialog(episodes: List<String>, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "Episodios") },
+        text = {
+            Column {
+                episodes.forEach { episode ->
+                    Text(text = episode)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        },
+        modifier = Modifier.padding(16.dp)
+    )
 }
