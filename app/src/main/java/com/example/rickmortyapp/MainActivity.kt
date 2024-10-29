@@ -11,6 +11,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.rickmortyapp.screens.CharacterDetailScreen
+import com.example.rickmortyapp.screens.HomeScreen
 import com.example.rickmortyapp.ui.theme.RickMortyAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +26,35 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RickMortyAppTheme {
+                val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+
+                    NavHost(navController = navController, startDestination = "home"){
+                        composable(route = "home") {
+                            HomeScreen(innerPadding, navController)
+                        }
+
+                        composable(
+                            route = "detail/{id}",
+                            arguments = listOf(
+                                navArgument("id"){
+                                    type=NavType.IntType
+                                    nullable=false
+                                }
+                            )
+                        ) {
+                            val id = it.arguments?.getInt("id") ?: 0
+                            CharacterDetailScreen(id = id, innerPaddingValues = innerPadding)
+
+                        }
+
+
+                    }
+
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RickMortyAppTheme {
-        Greeting("Android")
-    }
-}
